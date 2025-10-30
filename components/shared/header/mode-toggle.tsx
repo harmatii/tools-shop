@@ -17,8 +17,8 @@ const ModeToggle = () => {
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
-    setMounted(true), [];
-  });
+    setMounted(true);
+  }, []);
 
   if (!mounted) {
     return null;
@@ -29,7 +29,7 @@ const ModeToggle = () => {
       <DropdownMenuTrigger asChild>
         <Button
           variant={"ghost"}
-          className="focus-visible:ring-0 focus-visible: ring-offset-0"
+          className="focus-visible:ring-0 focus-visible:ring-offset-0"
         >
           {theme === "system" ? (
             <SunMoon />
@@ -41,7 +41,7 @@ const ModeToggle = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Appereance</DropdownMenuLabel>
+        <DropdownMenuLabel>Appearance</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuCheckboxItem
           checked={theme === "system"}

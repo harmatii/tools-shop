@@ -1,25 +1,13 @@
+import sampleData from "@/db/sample-data";
+import ProductList from "@/components/shared/product/product-list";
+
+console.log(sampleData);
 const Homepage = () => {
   return (
-    <h1 className="container font-bold text-3xl lg:text-4xl flex-start">
-      tools-shop
-    </h1>
+    <>
+      <ProductList data={sampleData.products} title="Newest Arrivals" />
+    </>
   );
 };
 
 export default Homepage;
-
-// import { resolve } from "path";
-
-// const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// const Homepage = async () => {
-//   await delay(2000);
-
-//   return (
-//     <h1 className="container font-bold text-3xl lg:text-4xl flex-start">
-//       tools-shop
-//     </h1>
-//   );
-// };
-
-// export default Homepage;

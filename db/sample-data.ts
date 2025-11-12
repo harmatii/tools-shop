@@ -10,6 +10,7 @@ const sampleData = {
         "/images/sample-products/p1-1.jpg",
         "/images/sample-products/p1-2.jpg",
       ],
+      oldPrice: 69.99,
       price: 59.99,
       brand: "Makita",
       rating: 4.5,

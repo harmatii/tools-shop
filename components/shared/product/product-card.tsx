@@ -3,6 +3,13 @@ import Link from "next/link";
 import Image from "next/image";
 
 const ProductCard = ({ product }: { product: any }) => {
+  const hasDiscount =
+    product.oldPrice && product.price && product.oldPrice > product.price;
+
+  const discountPct = hasDiscount
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+    : 0;
+
   return (
     <div className="group relative block overflow-hidden rounded-lg shadow-sm">
       {/* Wishlist Button */}
@@ -23,6 +30,13 @@ const ProductCard = ({ product }: { product: any }) => {
           />
         </svg>
       </button>
+
+      {/* Discount badge */}
+      {hasDiscount && (
+        <span className="absolute start-4 top-4 z-10 rounded-full bg-red-600 px-2 py-1 text-xs font-semibold text-white shadow-md">
+          -{discountPct}%
+        </span>
+      )}
 
       {/* Product Image */}
       <Link href={`/product/${product.slug}`}>
@@ -54,9 +68,22 @@ const ProductCard = ({ product }: { product: any }) => {
 
         {/* Price + Buy Button at bottom */}
         <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm font-semibold text-gray-900">
-            ${product.price}
-          </p>
+          <div className="flex flex-col">
+            {hasDiscount ? (
+              <>
+                <p className="text-sm font-semibold text-gray-900">
+                  ₴{product.price}
+                </p>
+                <p className="text-xs text-gray-400 line-through">
+                  ₴{product.oldPrice}
+                </p>
+              </>
+            ) : (
+              <p className="text-sm font-semibold text-gray-900">
+                ₴{product.price}
+              </p>
+            )}
+          </div>
 
           <button
             type="button"

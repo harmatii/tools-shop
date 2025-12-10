@@ -33,7 +33,7 @@ const ProductCard = ({ product }: { product: any }) => {
 
       {/* Discount badge */}
       {hasDiscount && (
-        <span className="absolute start-4 top-4 z-10 rounded-full bg-red-600 px-2 py-1 text-xs font-semibold text-white shadow-md">
+        <span className="absolute start-6 top-4 z-10 rounded-full bg-red-600 px-2 py-1 text-xs font-semibold text-white shadow-md">
           -{discountPct}%
         </span>
       )}
@@ -55,8 +55,8 @@ const ProductCard = ({ product }: { product: any }) => {
       {/* Product Info */}
       <div className="relative border border-gray-100 bg-white p-6 flex flex-col justify-between">
         {/* Product Name */}
-        <div className="min-h-[2.5rem] flex items-start">
-          <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
+        <div className="min-h-[3.8rem] flex items-start">
+          <h3 className="text-sm font-medium text-gray-900 line-clamp-3">
             {product.name}
           </h3>
         </div>

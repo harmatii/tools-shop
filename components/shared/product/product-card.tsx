@@ -40,12 +40,12 @@ const ProductCard = ({ product }: { product: any }) => {
 
       {/* Product Image */}
       <Link href={`/product/${product.slug}`}>
-        <div className="relative w-full aspect-[4/3] overflow-hidden">
+        <div className="relative w-full aspect-[4/5] overflow-hidden">
           <Image
             src={product.images[0]}
             alt={product.name}
             fill
-            className="object-contain"
+            className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority
           />
@@ -55,16 +55,16 @@ const ProductCard = ({ product }: { product: any }) => {
       {/* Product Info */}
       <div className="relative border border-gray-100 bg-white p-6 flex flex-col justify-between">
         {/* Product Name */}
-        <div className="min-h-[3.8rem] flex items-start">
-          <h3 className="text-sm font-medium text-gray-900 line-clamp-3">
+        <div className="min-h-[2.5rem] flex items-start">
+          <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
             {product.name}
           </h3>
         </div>
 
         {/* Description */}
-        <p className="mt-2 line-clamp-2 text-xs text-gray-600">
+        {/* <p className="mt-2 line-clamp-2 text-xs text-gray-600">
           {product.description}
-        </p>
+        </p> */}
 
         {/* Price + Buy Button at bottom */}
         <div className="mt-4 flex items-center justify-between">

@@ -1,13 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import Link from "next/link";
 import Image from "next/image";
+import { Product } from "@/types";
 
-const ProductCard = ({ product }: { product: any }) => {
-  const hasDiscount =
-    product.oldPrice && product.price && product.oldPrice > product.price;
+const ProductCard = ({ product }: { product: Product }) => {
+  const price = Number(product.price);
+  const oldPrice = product.oldPrice ? Number(product.oldPrice) : undefined;
+
+  const hasDiscount = oldPrice !== undefined && oldPrice > price;
 
   const discountPct = hasDiscount
-    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
+    ? Math.round(((oldPrice - price) / oldPrice) * 100)
     : 0;
 
   return (

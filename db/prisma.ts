@@ -19,6 +19,11 @@ export const prisma = new PrismaClient({ adapter }).$extends({
           return product.price.toString();
         },
       },
+      oldPrice: {
+        compute(product) {
+          return product.oldPrice?.toString() || "";
+        },
+      },
     },
   },
 });

@@ -15,18 +15,29 @@ export const insertProductSchema = z.object({
   category: z.string().min(3, "Category must be at least 3 characters long"),
   images: z.array(z.string()).min(1, "Product must have at least 1 image"),
   brand: z.string().min(3, "Brand must be at least 3 characters long"),
-  description: z
-    .string()
-    .min(3, "Description must be at least 3 characters long"),
-  stock: z.coerce
-    .number()
-    .int()
-    .nonnegative("Stock must be a non-negative integer"),
+  description: z.string().min(3, "Description must be at least 3 characters long"),
+  stock: z.coerce.number().int().nonnegative("Stock must be a non-negative integer"),
   price: formattedPrice,
-  oldPrice: z.preprocess(
-    (value) => (value === "" ? undefined : value),
-    formattedPrice.optional(),
-  ),
+  oldPrice: z.preprocess((value) => (value === "" ? undefined : value), formattedPrice.optional()),
   isFeatured: z.coerce.boolean().default(false),
   banner: z.string().nullable().optional(),
 });
+
+// Schema for signing users in
+export const signInFormSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+// Schema for signing up a user
+export const signUpFormSchema = z
+  .object({
+    name: z.string().min(3, "Name must be at least 3 characters"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Confirm password must be at least 6 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });

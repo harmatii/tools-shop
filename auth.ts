@@ -7,6 +7,8 @@ import { prisma } from "@/db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import type { NextAuthConfig } from "next-auth";
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export const config = {
   pages: {
@@ -94,6 +96,30 @@ export const config = {
       }
 
       return token;
+    },
+    authorized({ request, auth }: any) {
+      // Every visitor needs a session cart ID — it links their cart in the DB to this browser, even before sign-in.
+      if (!request.cookies.get("sessionCartId")) {
+        // UUID identifies this guest's cart row in the DB without requiring a login.
+        const sessionCartId = crypto.randomUUID();
+
+        // request.headers is read-only — clone it to get a mutable copy, required by NextResponse.next.
+        const newRequestHeaders = new Headers(request.headers);
+
+        // Pass-through response: request continues to the page normally. Constructed this way so we can attach the cookie below.
+        const response = NextResponse.next({
+          request: {
+            headers: newRequestHeaders,
+          },
+        });
+
+        // Adds Set-Cookie to the response — browser stores the ID and sends it back on every subsequent request.
+        response.cookies.set("sessionCartId", sessionCartId);
+
+        return response;
+      } else {
+        return true;
+      }
     },
   },
 } satisfies NextAuthConfig;

@@ -4,8 +4,8 @@ import Image from "next/image";
 import { Product } from "@/types";
 import { WishlistButton } from "./wishlist-button";
 import { DiscountBadge } from "./discount-badge";
-import { getDiscountPercentage } from "@/lib/utils";
-import { BuyButton } from "./buy-button";
+import { getDiscountPercentage, productToCartItem } from "@/lib/utils";
+import { AddToCart } from "./add-to-cart";
 import { ProductPrice } from "./product-price";
 
 const ProductCard = ({ product }: { product: Product }) => {
@@ -15,10 +15,7 @@ const ProductCard = ({ product }: { product: Product }) => {
   return (
     <div className="group relative block overflow-hidden rounded-lg shadow-sm">
       <WishlistButton className="absolute end-4 top-4 z-10" />
-      <DiscountBadge
-        discountPct={getDiscountPercentage(price, oldPrice)}
-        className="absolute start-6 top-4 z-10"
-      />
+      <DiscountBadge discountPct={getDiscountPercentage(price, oldPrice)} className="absolute start-6 top-4 z-10" />
 
       {/* Product Image */}
       <Link href={`/product/${product.slug}`}>
@@ -38,14 +35,12 @@ const ProductCard = ({ product }: { product: Product }) => {
       <div className="relative border border-gray-100 bg-white p-6 flex flex-col justify-between">
         {/* Product Name */}
         <div className="min-h-[2.5rem] flex items-start">
-          <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
-            {product.name}
-          </h3>
+          <h3 className="text-sm font-medium text-gray-900 line-clamp-2">{product.name}</h3>
         </div>
 
         <div className="mt-4 flex items-center justify-between">
           <ProductPrice price={price} oldPrice={oldPrice} />
-          <BuyButton />
+          <AddToCart item={productToCartItem(product)} />
         </div>
       </div>
     </div>

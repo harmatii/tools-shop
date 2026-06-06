@@ -7,6 +7,7 @@
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import type { CartItem, Product } from "@/types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -36,6 +37,20 @@ export function safeCallbackUrl(url: string | null | undefined): string {
   if (!url.startsWith("/")) return "/";
   if (url.startsWith("//")) return "/";
   return url;
+}
+
+// Build a CartItem snapshot from a product.
+// Used by every "add to cart" call site so the product → cart-item mapping
+// lives in one place instead of being duplicated inline.
+export function productToCartItem(product: Product): CartItem {
+  return {
+    productId: product.id,
+    name: product.name,
+    slug: product.slug,
+    price: product.price,
+    qty: 1,
+    image: product.images[0],
+  };
 }
 
 // Format errors

@@ -7,10 +7,12 @@ import { ProductPrice } from "@/components/shared/product/product-price";
 import { AddToCart } from "@/components/shared/product/add-to-cart";
 import { ProductImages } from "@/components/shared/product/product-images";
 import { productToCartItem } from "@/lib/utils";
+import { getMyCart } from "@/lib/actions/cart.actions";
 
 const ProductDetailsPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = await params;
   const product = await getProductBySlug(slug);
+  const cart = await getMyCart();
 
   if (!product) {
     notFound();
@@ -55,7 +57,7 @@ const ProductDetailsPage = async ({ params }: { params: Promise<{ slug: string }
           {/* Buy button and wishlist */}
           <div className="flex items-center gap-3">
             <div className="flex-1">
-              <AddToCart item={productToCartItem(product)} />
+              <AddToCart cart={cart} item={productToCartItem(product)} />
             </div>
             <WishlistButton className="h-12 w-12 rounded-full" />
           </div>

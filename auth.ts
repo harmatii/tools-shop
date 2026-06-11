@@ -5,19 +5,15 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compareSync } from "bcrypt-ts-edge";
-import type { NextAuthConfig } from "next-auth";
+import { authConfig } from "./auth.config";
+import { comparePasswords } from "@/lib/encrypt";
 
-export const config = {
-  pages: {
-    signIn: "/sign-in",
-    error: "/sign-in",
-  },
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
+
+  // PrismaAdapter connects Auth.js to the database, handling user and session storage.
   adapter: PrismaAdapter(prisma),
+
   // Login providers — only email/password for now. Add OAuth providers (Google, GitHub, etc.) to this array.
   providers: [
     CredentialsProvider({
@@ -38,7 +34,7 @@ export const config = {
 
         // User exists AND has a password (OAuth-only users have password: null).
         if (user && user.password) {
-          const isMatch = compareSync(credentials.password as string, user.password);
+          const isMatch = comparePasswords(credentials.password as string, user.password);
 
           if (isMatch) {
             return {
@@ -59,12 +55,12 @@ export const config = {
   //   - session: reads those fields back OUT into the session object on every auth() call.
   // The token is the bridge between them.
   callbacks: {
+    ...authConfig.callbacks,
     // session() — runs on every auth() call. Builds the object your app code reads.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async session({ session, user, trigger, token }: any) {
+    async session({ session, user, trigger, token }) {
       // Copy custom fields from token → session.user (default Session has no id/role).
-      session.user.id = token.sub;
-      session.user.role = token.role;
+      session.user.id = token.sub as string;
+      session.user.role = token.role as string;
       session.user.name = token.name;
 
       // When the client calls `update(session)`, refresh the name from the latest user object.
@@ -75,8 +71,7 @@ export const config = {
       return session;
     },
     // jwt() — runs at sign-in / sign-up / update. `user` is only defined on the first call after sign-in.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async jwt({ token, user, trigger, session }: any) {
+    async jwt({ token, user }) {
       // First call after sign-in only — copy DB fields onto the token so they persist in the cookie.
       if (user) {
         token.role = user.role;
@@ -96,6 +91,4 @@ export const config = {
       return token;
     },
   },
-} satisfies NextAuthConfig;
-
-export const { handlers, auth, signIn, signOut } = NextAuth(config);
+});

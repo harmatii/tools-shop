@@ -12,8 +12,7 @@ export const metadata: Metadata = {
   title: "Sign Up",
 };
 
-// Sign-up page — async server component that renders the sign-up card with the SignUpForm inside.
-// Redirects already-logged-in users to the safeCallbackUrl (or "/") so they don't see the form unnecessarily.
+// /sign-up page that shows the sign-up form. If the user is already signed in, it redirects them to the callbackUrl or home page.
 const SignUpPage = async (props: {
   searchParams: Promise<{
     callbackUrl: string;

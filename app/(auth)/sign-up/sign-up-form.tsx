@@ -10,7 +10,7 @@ import { useFormStatus } from "react-dom";
 import { signUpUser } from "@/lib/actions/user.actions";
 import { useSearchParams } from "next/navigation";
 import { safeCallbackUrl } from "@/lib/utils";
-import PasswordInput from "@/components/shared/password-input";
+import PasswordInput from "@/components/features/password-input";
 
 // Sign-up form — client component wired to the signUpUser server action via useActionState.
 // Shows pending state on submit, displays validation errors, and repopulates name/email after a failed submission.

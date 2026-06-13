@@ -40,6 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/lib/generated/prisma
+/prisma/generated
 CLAUDE.md
 .claude/commands/snapshot.md

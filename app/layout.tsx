@@ -1,3 +1,5 @@
+// Wraps every page in the entire app — because every route lives inside app/.
+// Sets <html>, <body>, global font and CSS. Never unmounts as you navigate.
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/assets/styles/globals.css";

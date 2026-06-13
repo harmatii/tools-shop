@@ -7,7 +7,7 @@ import { signInFormSchema, signUpFormSchema } from "../validators";
 import { signIn, signOut } from "@/auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { hashPassword } from "@/lib/encrypt";
-import { prisma } from "@/db/prisma";
+import { prisma } from "@/lib/db";
 import { formatError } from "../utils";
 
 // Sign in the user with credentials

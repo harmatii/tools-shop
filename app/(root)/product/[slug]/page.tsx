@@ -1,11 +1,14 @@
+// Product detail page at "/product/[slug]". The [slug] folder makes it a dynamic route —
+// Next.js captures whatever is in the URL there and passes it as params.slug.
+// Calls notFound() if no product matches, which triggers app/not-found.tsx.
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getProductBySlug } from "@/lib/actions/product.actions";
 import { notFound } from "next/navigation";
-import { WishlistButton } from "@/components/shared/product/wishlist-button";
-import { ProductPrice } from "@/components/shared/product/product-price";
-import { AddToCart } from "@/components/shared/product/add-to-cart";
-import { ProductImages } from "@/components/shared/product/product-images";
+import { WishlistButton } from "@/components/features/product/wishlist-button";
+import { ProductPrice } from "@/components/features/product/product-price";
+import { AddToCart } from "@/components/features/product/add-to-cart";
+import { ProductImages } from "@/components/features/product/product-images";
 import { productToCartItem } from "@/lib/utils";
 import { getMyCart } from "@/lib/actions/cart.actions";
 

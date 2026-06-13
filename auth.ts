@@ -3,7 +3,7 @@
 
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/db/prisma";
+import { prisma } from "@/lib/db";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
 import { comparePasswords } from "@/lib/encrypt";

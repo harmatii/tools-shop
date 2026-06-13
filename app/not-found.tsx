@@ -1,3 +1,5 @@
+// Auto-shown by Next.js when a URL matches no route, or when notFound() is called.
+// Lives here in app/ so it's the fallback for the whole site (same folder-scoping rule as layouts).
 import Image from "next/image";
 import Link from "next/link";
 

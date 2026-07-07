@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { CartItem } from "@/types";
 import { convertToPlainObject, formatError, round2 } from "../utils";
 import { auth } from "@/auth";
-import { prisma } from "@/db/prisma";
+import { prisma } from "@/lib/db";
 import { cartItemSchema, insertCartSchema } from "../validators";
 import { revalidatePath } from "next/cache";
 import { Prisma } from "@prisma/client";
@@ -51,15 +51,9 @@ export async function getMyCart() {
 
   if (!cart) return undefined;
 
-  // Prisma returns Decimal objects for price fields — not serializable.
-  // Convert each to string to match the Zod schema and make the object
-  // safe to pass to client components.
   return convertToPlainObject({
     ...cart,
     items: cart.items as CartItem[],
-    itemsPrice: cart.itemsPrice.toString(),
-    totalPrice: cart.totalPrice.toString(),
-    shippingPrice: cart.shippingPrice.toString(),
   });
 }
 

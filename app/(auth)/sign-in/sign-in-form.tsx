@@ -10,7 +10,7 @@ import { useFormStatus } from "react-dom";
 import { signInWithCredentials } from "@/lib/actions/user.actions";
 import { useSearchParams } from "next/navigation";
 import { safeCallbackUrl } from "@/lib/utils";
-import PasswordInput from "@/components/shared/password-input";
+import PasswordInput from "@/components/features/password-input";
 
 // Sign-in form — client component wired to the signInWithCredentials server action via useActionState.
 // Shows pending state on submit, displays the error message returned by the action, and embeds the callbackUrl as a hidden input.

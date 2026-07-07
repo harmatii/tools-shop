@@ -1,5 +1,5 @@
 "use server";
-import { prisma } from "@/db/prisma";
+import { prisma } from "@/lib/db";
 import { convertToPlainObject } from "../utils";
 import { LATEST_PRODUCTS_LIMIT } from "@/lib/constants";
 

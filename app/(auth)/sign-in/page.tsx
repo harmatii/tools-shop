@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { APP_NAME } from "@/lib/constants";
-import CredentialsSignInForm from "./credentials-signin-form";
+import CredentialsSignInForm from "./sign-in-form";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { safeCallbackUrl } from "@/lib/utils";
@@ -12,8 +12,7 @@ export const metadata: Metadata = {
   title: "Sign In",
 };
 
-// Sign-in page — async server component that renders the sign-in card with CredentialsSignInForm inside.
-// Redirects already-logged-in users to the safeCallbackUrl (or "/") so they don't see the form unnecessarily.
+// /sign-in page that shows the sign-in form. If the user is already signed in, it redirects them to the callbackUrl or home page.
 const SignInPage = async (props: {
   searchParams: Promise<{
     callbackUrl: string;

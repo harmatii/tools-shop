@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { cartItemSchema, insertCartSchema } from "../validators";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/prisma/generated";
 
 // Read the session cart cookie set by middleware on every request.
 // If somehow missing, something is badly wrong — bail out early.

@@ -39,9 +39,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (isMatch) {
             return {
               id: user.id,
-              name: user.name,
               email: user.email,
               role: user.role,
+              firstName: user.firstName,
             };
           }
         }
@@ -57,35 +57,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
     // session() — runs on every auth() call. Builds the object your app code reads.
-    async session({ session, user, trigger, token }) {
+    async session({ session, token }) {
       // Copy custom fields from token → session.user (default Session has no id/role).
       session.user.id = token.sub as string;
       session.user.role = token.role as string;
       session.user.name = token.name;
 
-      // When the client calls `update(session)`, refresh the name from the latest user object.
-      if (trigger === "update") {
-        session.user.name = user.name;
-      }
-
       return session;
     },
     // jwt() — runs at sign-in / sign-up / update. `user` is only defined on the first call after sign-in.
-    async jwt({ token, user }) {
+    async jwt({ token, user }: any) {
       // First call after sign-in only — copy DB fields onto the token so they persist in the cookie.
       if (user) {
         token.role = user.role;
 
-        // Fallback: if the DB has the "NO_NAME" default, derive a name from the email's local part.
-        if (user.name === "NO_NAME") {
-          token.name = user.email!.split("@")[0];
-
-          // Persist the derived name back to the DB so this fix-up only runs once per user.
-          await prisma.user.update({
-            where: { id: user.id },
-            data: { name: token.name },
-          });
-        }
+        // There's no "name" column on User anymore — firstName is only known once the user has
+        // completed checkout. Prefer it for the header's initial/display name, else fall back to
+        // the email's local part.
+        token.name = user.firstName ?? user.email!.split("@")[0];
       }
 
       return token;

@@ -2,5 +2,11 @@
     "css.validate": false,
     "editor.quickSuggestions": {
       "strings": true
+    },
+    "files.exclude": {
+      "prisma/generated": true
+    },
+    "files.watcherExclude": {
+      "**/prisma/generated/**": true
     }
   }

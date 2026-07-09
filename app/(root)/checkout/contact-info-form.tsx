@@ -1,21 +1,24 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useToast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
 import { useTransition } from "react";
 import { ContactInfo } from "@/types";
 import { contactInfoSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ControllerRenderProps, useForm } from "react-hook-form";
+import { ControllerRenderProps, useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { contactInfoDefaultValues } from "@/lib/constants";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Loader } from "lucide-react";
+import { updateUserContactInfo } from "@/lib/actions/user.actions";
 
 const ContactInfoForm = ({ contactInfo }: { contactInfo: ContactInfo }) => {
   "use no memo";
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof contactInfoSchema>>({
     resolver: zodResolver(contactInfoSchema),
     defaultValues: contactInfo || contactInfoDefaultValues,
@@ -23,8 +26,20 @@ const ContactInfoForm = ({ contactInfo }: { contactInfo: ContactInfo }) => {
 
   const [isPending, startTransition] = useTransition();
 
-  const onSubmit = async () => {
-    return;
+  const onSubmit: SubmitHandler<z.infer<typeof contactInfoSchema>> = async (data) => {
+    startTransition(async () => {
+      const result = await updateUserContactInfo(data);
+
+      if (!result.success) {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+        return;
+      }
+      //router.push("/checkout/delivery-method");
+    });
   };
 
   return (
@@ -87,11 +102,7 @@ const ContactInfoForm = ({ contactInfo }: { contactInfo: ContactInfo }) => {
             <FormField
               control={form.control}
               name="phoneNumber"
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<z.infer<typeof contactInfoSchema>, "phoneNumber">;
-              }) => (
+              render={({ field }: { field: ControllerRenderProps<z.infer<typeof contactInfoSchema>, "phoneNumber"> }) => (
                 <FormItem className="w-full">
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>

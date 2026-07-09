@@ -32,14 +32,13 @@ export async function signInWithCredentials(prevState: unknown, formData: FormDa
 
 // Sign user out
 export async function signOutUser() {
-  await signOut();
+  await signOut({ redirectTo: "/" });
 }
 
 // Sign up user
 export async function signUpUser(prevState: unknown, formData: FormData) {
   try {
     const user = signUpFormSchema.parse({
-      name: formData.get("name"),
       email: formData.get("email"),
       password: formData.get("password"),
       confirmPassword: formData.get("confirmPassword"),
@@ -51,7 +50,6 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
 
     await prisma.user.create({
       data: {
-        name: user.name,
         email: user.email,
         password: user.password,
       },
@@ -72,9 +70,17 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
 
       // Echo back non-sensitive fields so the form can repopulate:
       values: {
-        name: formData.get("name") as string,
         email: formData.get("email") as string,
       },
     };
   }
+}
+
+// Get user by the ID
+export async function getUserById(userId: string) {
+  const user = await prisma.user.findFirst({
+    where: { id: userId },
+  });
+  if (!user) throw new Error("User not found");
+  return user;
 }

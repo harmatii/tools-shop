@@ -26,7 +26,9 @@ model Product {
 
 model User {
   id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String    @default("NO_NAME")
+  firstName     String?
+  lastName      String?
+  phoneNumber   String?
   email         String    @unique(map: "user_email_idx")
   emailVerified DateTime? @db.Timestamp(6)
   image         String?

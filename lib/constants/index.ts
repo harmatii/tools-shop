@@ -7,8 +7,19 @@ export const signInDefaultValues = {
   password: "",
 };
 export const signUpDefaultValues = {
-  name: "",
   email: "",
   password: "",
   confirmPassword: "",
+};
+export const contactInfoDefaultValues = {
+  firstName: "",
+  lastName: "",
+  phoneNumber: "",
+  email: "",
+};
+export const shippingAddressDefaultValues = {
+  streetAddress: "",
+  city: "",
+  postalCode: "",
+  country: "",
 };

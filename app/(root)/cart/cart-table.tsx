@@ -118,7 +118,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
               <Button
                 className="w-full"
                 disabled={isPending}
-                onClick={() => startTransition(() => router.push("/shipping-address"))}
+                onClick={() => startTransition(() => router.push("/checkout"))}
               >
                 {isPending ? <Loader className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />} Proceed
                 to Checkout

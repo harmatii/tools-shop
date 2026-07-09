@@ -3,12 +3,13 @@
 
 "use server";
 
-import { signInFormSchema, signUpFormSchema } from "../validators";
-import { signIn, signOut } from "@/auth";
+import { contactInfoSchema, shippingAddressSchema, signInFormSchema, signUpFormSchema } from "../validators";
+import { auth, signIn, signOut } from "@/auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { hashPassword } from "@/lib/encrypt";
 import { prisma } from "@/lib/db";
 import { formatError } from "../utils";
+import { ContactInfo, ShippingAddress } from "@/types";
 
 // Sign in the user with credentials
 export async function signInWithCredentials(prevState: unknown, formData: FormData) {
@@ -83,4 +84,64 @@ export async function getUserById(userId: string) {
   });
   if (!user) throw new Error("User not found");
   return user;
+}
+
+// Update the user's contact information
+export async function updateUserContactInfo(data: ContactInfo) {
+  try {
+    const session = await auth();
+
+    const currentUser = await prisma.user.findFirst({
+      where: { id: session?.user?.id },
+    });
+
+    if (!currentUser) throw new Error("User not found");
+
+    const contactInfo = contactInfoSchema.parse(data);
+
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: {
+        firstName: contactInfo.firstName,
+        lastName: contactInfo.lastName,
+        phoneNumber: contactInfo.phoneNumber,
+        email: contactInfo.email,
+      },
+    });
+
+    return { success: true, message: "Contact information updated successfully" };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+// Update the user's shipping address
+export async function updateUserShippingAddress(data: ShippingAddress) {
+  try {
+    const session = await auth();
+
+    const currentUser = await prisma.user.findFirst({
+      where: { id: session?.user?.id },
+    });
+
+    if (!currentUser) throw new Error("User not found");
+
+    const shippingAddress = shippingAddressSchema.parse(data);
+
+    await prisma.user.update({
+      where: { id: currentUser.id },
+      data: {
+        address: {
+          streetAddress: shippingAddress.streetAddress,
+          city: shippingAddress.city,
+          postalCode: shippingAddress.postalCode,
+          country: shippingAddress.country,
+        },
+      },
+    });
+
+    return { success: true, message: "Shipping address updated successfully" };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
 }

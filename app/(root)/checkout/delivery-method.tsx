@@ -1,17 +1,18 @@
 "use client";
 
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { useTransition } from "react";
 import { ShippingAddress } from "@/types";
 import { shippingAddressSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ControllerRenderProps, useForm } from "react-hook-form";
+import { ControllerRenderProps, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { shippingAddressDefaultValues } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader, ArrowRight } from "lucide-react";
+import { updateUserShippingAddress } from "@/lib/actions/user.actions";
 
 const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress }) => {
   // we opt this component out of React Compiler because it skips the re-renders
@@ -25,8 +26,20 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
 
   const [isPending, startTransition] = useTransition();
 
-  const onSubmit = async () => {
-    return;
+  const onSubmit: SubmitHandler<z.infer<typeof shippingAddressSchema>> = async (data) => {
+    startTransition(async () => {
+      const result = await updateUserShippingAddress(data);
+
+      if (!result.success) {
+        toast({
+          title: "Error",
+          description: result.message,
+          variant: "destructive",
+        });
+        return;
+      }
+      //router.push("/checkout/delivery-method");
+    });
   };
 
   return (
@@ -41,11 +54,7 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
             <FormField
               control={form.control}
               name="streetAddress"
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "streetAddress">;
-              }) => (
+              render={({ field }: { field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "streetAddress"> }) => (
                 <FormItem className="w-full">
                   <FormLabel>Street Address</FormLabel>
                   <FormControl>
@@ -77,11 +86,7 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
             <FormField
               control={form.control}
               name="postalCode"
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "postalCode">;
-              }) => (
+              render={({ field }: { field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "postalCode"> }) => (
                 <FormItem className="w-full">
                   <FormLabel>Postal Code</FormLabel>
                   <FormControl>
@@ -97,11 +102,7 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
             <FormField
               control={form.control}
               name="country"
-              render={({
-                field,
-              }: {
-                field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "country">;
-              }) => (
+              render={({ field }: { field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "country"> }) => (
                 <FormItem className="w-full">
                   <FormLabel>Country</FormLabel>
                   <FormControl>

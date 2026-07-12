@@ -2,6 +2,7 @@
 // Exports `handlers` (used by /api/auth/[...nextauth]/route.ts) and `auth`, `signIn`, `signOut` for use throughout the app.
 
 import NextAuth from "next-auth";
+import { cookies } from "next/headers";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -66,15 +67,45 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
     // jwt() — runs at sign-in / sign-up / update. `user` is only defined on the first call after sign-in.
-    async jwt({ token, user }: any) {
+    async jwt({ token, user, trigger }: any) {
       // First call after sign-in only — copy DB fields onto the token so they persist in the cookie.
       if (user) {
+        token.id = user.id;
         token.role = user.role;
 
         // There's no "name" column on User anymore — firstName is only known once the user has
         // completed checkout. Prefer it for the header's initial/display name, else fall back to
         // the email's local part.
         token.name = user.firstName ?? user.email!.split("@")[0];
+
+        // If the user added items to the cart before logging in, we move that cart to their
+        // account after they signIn signUp so the items are not lost.
+        if (trigger === "signIn" || trigger === "signUp") {
+          // Read the guest-cart ID from the browser's cookies (every guest gets one while browsing).
+          const cookiesObject = await cookies();
+          const sessionCartId = cookiesObject.get("sessionCartId")?.value;
+
+          if (sessionCartId) {
+            // Look up the actual cart row that belongs to that guest ID.
+            const sessionCart = await prisma.cart.findFirst({
+              where: { sessionCartId },
+            });
+
+            if (sessionCart) {
+              // The account may still have an old cart from a previous session — we drop it,
+              // because the cart the user just built as a guest is the one they expect to see.
+              await prisma.cart.deleteMany({
+                where: { userId: user.id },
+              });
+
+              // Stamp the user's ID onto the guest cart — same row, new owner.
+              await prisma.cart.update({
+                where: { id: sessionCart.id },
+                data: { userId: user.id },
+              });
+            }
+          }
+        }
       }
 
       return token;

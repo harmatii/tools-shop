@@ -7,6 +7,7 @@ import { ContactInfo, ShippingAddress } from "@/types";
 import ContactInfoForm from "./contact-info-form";
 import DeliveryMethod from "./delivery-method";
 import PaymentMethod from "./payment-method";
+import CheckoutSteps from "@/components/features/checkout-steps";
 
 export const metadata: Metadata = {
   title: "Checkout",
@@ -43,10 +44,9 @@ const CheckoutPage = async () => {
 
   return (
     <>
-      <div className="w-full md:w-1/3 mx-auto">
-        <ContactInfoForm contactInfo={contactInfo} />
-        <DeliveryMethod shippingAddress={shippingAddress} />
-      </div>
+      <CheckoutSteps current={0} />
+      <ContactInfoForm contactInfo={contactInfo} />
+      <DeliveryMethod shippingAddress={shippingAddress} />
       <PaymentMethod />
     </>
   );

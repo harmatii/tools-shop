@@ -36,8 +36,11 @@ const CheckoutPage = async () => {
   const savedAddress = user.address as ShippingAddress | null;
 
   const shippingAddress: ShippingAddress = {
-    streetAddress: savedAddress?.streetAddress ?? "",
+    carrier: savedAddress?.carrier ?? "novaPoshta",
+    deliveryType: savedAddress?.deliveryType ?? "branch",
     city: savedAddress?.city ?? "",
+    branch: savedAddress?.branch ?? "",
+    streetAddress: savedAddress?.streetAddress ?? "",
     postalCode: savedAddress?.postalCode ?? "",
     country: savedAddress?.country ?? "",
   };

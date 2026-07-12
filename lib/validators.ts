@@ -68,10 +68,37 @@ export const contactInfoSchema = z.object({
   email: z.email("Invalid email address"),
 });
 
-// Schema for the checkout delivery address section
-export const shippingAddressSchema = z.object({
-  streetAddress: z.string().min(3, "Address must be at least 3 characters"),
-  city: z.string().min(3, "City must be at least 3 characters"),
-  postalCode: z.string().min(3, "Postal code must be at least 3 characters"),
-  country: z.string().min(3, "Country must be at least 3 characters"),
-});
+// Schema for the checkout delivery method section. The user first picks a carrier
+// and a delivery type; which of the remaining fields are actually required depends
+// on that choice, so we keep them all as plain strings here and enforce the
+// conditional rules in superRefine below. We deliberately avoid a discriminated
+// union because react-hook-form works much more smoothly with a single flat object type.
+export const shippingAddressSchema = z
+  .object({
+    carrier: z.enum(["novaPoshta", "ukrPoshta"]),
+    deliveryType: z.enum(["branch", "address"]),
+    city: z.string().min(3, "City must be at least 3 characters"),
+    branch: z.string(),
+    streetAddress: z.string(),
+    postalCode: z.string(),
+    country: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    // When delivering to a branch (відділення) the user only needs to tell us which one.
+    if (data.deliveryType === "branch" && data.branch.trim().length < 1) {
+      ctx.addIssue({ code: "custom", path: ["branch"], message: "Branch is required" });
+    }
+
+    // When delivering to the door (адресна доставка) we need the full address instead.
+    if (data.deliveryType === "address") {
+      if (data.streetAddress.trim().length < 3) {
+        ctx.addIssue({ code: "custom", path: ["streetAddress"], message: "Address must be at least 3 characters" });
+      }
+      if (data.postalCode.trim().length < 3) {
+        ctx.addIssue({ code: "custom", path: ["postalCode"], message: "Postal code must be at least 3 characters" });
+      }
+      if (data.country.trim().length < 3) {
+        ctx.addIssue({ code: "custom", path: ["country"], message: "Country must be at least 3 characters" });
+      }
+    }
+  });

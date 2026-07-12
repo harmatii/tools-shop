@@ -17,9 +17,14 @@ export const contactInfoDefaultValues = {
   phoneNumber: "",
   email: "",
 };
+// The `as const` keeps carrier and deliveryType as their literal values instead of
+// widening them to plain strings, which is what the zod enum in the schema expects.
 export const shippingAddressDefaultValues = {
-  streetAddress: "",
+  carrier: "novaPoshta",
+  deliveryType: "branch",
   city: "",
+  branch: "",
+  streetAddress: "",
   postalCode: "",
   country: "",
-};
+} as const;

@@ -132,8 +132,11 @@ export async function updateUserShippingAddress(data: ShippingAddress) {
       where: { id: currentUser.id },
       data: {
         address: {
-          streetAddress: shippingAddress.streetAddress,
+          carrier: shippingAddress.carrier,
+          deliveryType: shippingAddress.deliveryType,
           city: shippingAddress.city,
+          branch: shippingAddress.branch,
+          streetAddress: shippingAddress.streetAddress,
           postalCode: shippingAddress.postalCode,
           country: shippingAddress.country,
         },

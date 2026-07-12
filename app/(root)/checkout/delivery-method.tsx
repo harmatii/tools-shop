@@ -5,14 +5,16 @@ import { useTransition } from "react";
 import { ShippingAddress } from "@/types";
 import { shippingAddressSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ControllerRenderProps, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { shippingAddressDefaultValues } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader, ArrowRight } from "lucide-react";
 import { updateUserShippingAddress } from "@/lib/actions/user.actions";
+import AddressFields from "./address-fields";
 
 const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress }) => {
   // we opt this component out of React Compiler because it skips the re-renders
@@ -23,6 +25,10 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
     resolver: zodResolver(shippingAddressSchema),
     defaultValues: shippingAddress || shippingAddressDefaultValues,
   });
+
+  // We subscribe to the delivery type radio so the JSX below can decide whether to
+  // show the branch picker or the full address fields as the user switches between them.
+  const deliveryType = form.watch("deliveryType");
 
   const [isPending, startTransition] = useTransition();
 
@@ -50,27 +56,66 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
 
       <Form {...form}>
         <form method="post" className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex flex-col md:flex-row gap-5">
-            <FormField
-              control={form.control}
-              name="streetAddress"
-              render={({ field }: { field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "streetAddress"> }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Street Address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Вулиця, будинок, квартира" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <FormField
+            control={form.control}
+            name="carrier"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Перевізник</FormLabel>
+                <FormControl>
+                  <RadioGroup onValueChange={field.onChange} value={field.value} className="flex flex-col gap-2">
+                    <FormItem className="flex items-center gap-3">
+                      <FormControl>
+                        <RadioGroupItem value="novaPoshta" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Нова Пошта</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center gap-3">
+                      <FormControl>
+                        <RadioGroupItem value="ukrPoshta" />
+                      </FormControl>
+                      <FormLabel className="font-normal">УкрПошта</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
+          <FormField
+            control={form.control}
+            name="deliveryType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Спосіб отримання</FormLabel>
+                <FormControl>
+                  <RadioGroup onValueChange={field.onChange} value={field.value} className="flex flex-col gap-2">
+                    <FormItem className="flex items-center gap-3">
+                      <FormControl>
+                        <RadioGroupItem value="branch" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Відділення</FormLabel>
+                    </FormItem>
+                    <FormItem className="flex items-center gap-3">
+                      <FormControl>
+                        <RadioGroupItem value="address" />
+                      </FormControl>
+                      <FormLabel className="font-normal">Адресна доставка</FormLabel>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Both delivery types need the city, so we always show it. */}
           <div className="flex flex-col md:flex-row gap-5">
             <FormField
               control={form.control}
               name="city"
-              render={({ field }: { field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "city"> }) => (
+              render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>City</FormLabel>
                   <FormControl>
@@ -82,37 +127,27 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
             />
           </div>
 
-          <div className="flex flex-col md:flex-row gap-5">
-            <FormField
-              control={form.control}
-              name="postalCode"
-              render={({ field }: { field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "postalCode"> }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Postal Code</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Поштовий індекс" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          {/* Delivery to a branch only needs to know which branch, while delivery to
+              the door needs the rest of the address, so we swap the fields here. */}
+          {deliveryType === "branch" && (
+            <div className="flex flex-col md:flex-row gap-5">
+              <FormField
+                control={form.control}
+                name="branch"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Відділення</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Номер або адреса відділення" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          )}
 
-          <div className="flex flex-col md:flex-row gap-5">
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }: { field: ControllerRenderProps<z.infer<typeof shippingAddressSchema>, "country"> }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Країна" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          {deliveryType === "address" && <AddressFields control={form.control} />}
 
           <div className="flex gap-2">
             <Button type="submit" disabled={isPending}>

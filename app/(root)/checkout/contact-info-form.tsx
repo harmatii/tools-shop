@@ -5,7 +5,7 @@ import { useTransition } from "react";
 import { ContactInfo } from "@/types";
 import { contactInfoSchema } from "@/lib/validators";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ControllerRenderProps, useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 import { contactInfoDefaultValues } from "@/lib/constants";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -52,7 +52,7 @@ const ContactInfoForm = ({ contactInfo }: { contactInfo: ContactInfo }) => {
             <FormField
               control={form.control}
               name="firstName"
-              render={({ field }: { field: ControllerRenderProps<z.infer<typeof contactInfoSchema>, "firstName"> }) => (
+              render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>First Name</FormLabel>
                   <FormControl>
@@ -68,7 +68,7 @@ const ContactInfoForm = ({ contactInfo }: { contactInfo: ContactInfo }) => {
             <FormField
               control={form.control}
               name="lastName"
-              render={({ field }: { field: ControllerRenderProps<z.infer<typeof contactInfoSchema>, "lastName"> }) => (
+              render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Last Name</FormLabel>
                   <FormControl>
@@ -84,7 +84,7 @@ const ContactInfoForm = ({ contactInfo }: { contactInfo: ContactInfo }) => {
             <FormField
               control={form.control}
               name="email"
-              render={({ field }: { field: ControllerRenderProps<z.infer<typeof contactInfoSchema>, "email"> }) => (
+              render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Email</FormLabel>
                   <FormControl>
@@ -100,7 +100,7 @@ const ContactInfoForm = ({ contactInfo }: { contactInfo: ContactInfo }) => {
             <FormField
               control={form.control}
               name="phoneNumber"
-              render={({ field }: { field: ControllerRenderProps<z.infer<typeof contactInfoSchema>, "phoneNumber"> }) => (
+              render={({ field }) => (
                 <FormItem className="w-full">
                   <FormLabel>Phone Number</FormLabel>
                   <FormControl>

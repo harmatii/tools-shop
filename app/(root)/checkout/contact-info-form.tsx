@@ -1,7 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { toast, useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { useTransition } from "react";
 import { ContactInfo } from "@/types";
 import { contactInfoSchema } from "@/lib/validators";
@@ -17,7 +16,6 @@ import { updateUserContactInfo } from "@/lib/actions/user.actions";
 
 const ContactInfoForm = ({ contactInfo }: { contactInfo: ContactInfo }) => {
   "use no memo";
-  const router = useRouter();
 
   const form = useForm<z.infer<typeof contactInfoSchema>>({
     resolver: zodResolver(contactInfoSchema),

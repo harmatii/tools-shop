@@ -18,6 +18,15 @@ export const authConfig = {
   providers: [],
   callbacks: {
     authorized({ request, auth }) {
+      // Array of regex patterns of paths we want to protect.
+      const protectedPaths = [/\/checkout/, /\/profile/, /\/user\/(.*)/, /\/order\/(.*)/, /\/admin/];
+
+      // Get pathname from the req URL object
+      const { pathname } = request.nextUrl;
+
+      // Check if user is not authenticated and accessing a protected path
+      if (!auth && protectedPaths.some((p) => p.test(pathname))) return false;
+
       // Every visitor needs a session cart ID — it links their cart in the DB to this browser, even before sign-in.
       if (!request.cookies.get("sessionCartId")) {
         // UUID identifies this guest's cart row in the DB without requiring a login.

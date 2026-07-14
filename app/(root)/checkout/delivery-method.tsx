@@ -14,7 +14,9 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader, ArrowRight } from "lucide-react";
 import { updateUserShippingAddress } from "@/lib/actions/user.actions";
+import { searchCities, searchWarehouses } from "@/lib/actions/novaposhta.actions";
 import AddressFields from "./address-fields";
+import AsyncCombobox from "@/components/features/async-combobox";
 
 const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress }) => {
   // we opt this component out of React Compiler because it skips the re-renders
@@ -29,6 +31,12 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
   // We subscribe to the delivery type radio so the JSX below can decide whether to
   // show the branch picker or the full address fields as the user switches between them.
   const deliveryType = form.watch("deliveryType");
+
+  // The Nova Poshta comboboxes only make sense for Nova Poshta, so we watch the
+  // carrier to fall back to plain text inputs when УкрПошта is selected. We also
+  // watch cityRef because the branch search needs to know which city to look in.
+  const carrier = form.watch("carrier");
+  const cityRef = form.watch("cityRef");
 
   const [isPending, startTransition] = useTransition();
 
@@ -110,16 +118,34 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
             )}
           />
 
-          {/* Both delivery types need the city, so we always show it. */}
+          {/* Both delivery types need the city, so we always show it. For Nova
+              Poshta the field is an autocomplete backed by their API; for other
+              carriers we keep the plain text input. Picking a different city
+              resets the chosen branch, because the old one belongs to the old city. */}
           <div className="flex flex-col md:flex-row gap-5">
             <FormField
               control={form.control}
               name="city"
               render={({ field }) => (
                 <FormItem className="w-full">
-                  <FormLabel>City</FormLabel>
+                  <FormLabel>Місто</FormLabel>
                   <FormControl>
-                    <Input placeholder="Місто" {...field} />
+                    {carrier === "novaPoshta" ? (
+                      <AsyncCombobox
+                        value={field.value}
+                        placeholder="Почніть вводити назву міста…"
+                        emptyText="Місто не знайдено"
+                        onSearch={searchCities}
+                        onSelect={(option) => {
+                          form.setValue("city", option.label, { shouldValidate: true });
+                          form.setValue("cityRef", option.value);
+                          form.setValue("branch", "");
+                          form.setValue("branchRef", "");
+                        }}
+                      />
+                    ) : (
+                      <Input placeholder="Місто" {...field} />
+                    )}
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -138,7 +164,25 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
                   <FormItem className="w-full">
                     <FormLabel>Відділення</FormLabel>
                     <FormControl>
-                      <Input placeholder="Номер або адреса відділення" {...field} />
+                      {carrier === "novaPoshta" ? (
+                        // The branch list opens with the city's first branches right
+                        // away (searchOnOpen) and stays disabled until a city is
+                        // picked, because the API can't search branches without one.
+                        <AsyncCombobox
+                          value={field.value}
+                          placeholder={cityRef ? "Номер або вулиця відділення…" : "Спочатку оберіть місто"}
+                          emptyText="Відділення не знайдено"
+                          onSelect={(option) => {
+                            form.setValue("branch", option.label, { shouldValidate: true });
+                            form.setValue("branchRef", option.value);
+                          }}
+                          onSearch={(query) => searchWarehouses(cityRef, query)}
+                          searchOnOpen
+                          disabled={!cityRef}
+                        />
+                      ) : (
+                        <Input placeholder="Номер або адреса відділення" {...field} />
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>

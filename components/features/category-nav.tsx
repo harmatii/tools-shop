@@ -67,18 +67,13 @@ const CategoryNav = () => {
               <NavigationMenuItem key={category.name}>
                 {category.items ? (
                   <>
-                    <NavigationMenuTrigger className="bg-transparent">
-                      {category.name}
-                    </NavigationMenuTrigger>
+                    <NavigationMenuTrigger className="bg-transparent">{category.name}</NavigationMenuTrigger>
 
                     <NavigationMenuContent>
                       <div className="grid min-w-[220px] gap-2 p-4">
                         {category.items.map((item) => (
                           <NavigationMenuLink asChild key={item.name}>
-                            <Link
-                              href={item.href}
-                              className="rounded-md px-3 py-2 text-sm hover:bg-muted"
-                            >
+                            <Link href={item.href} className="rounded-md px-3 py-2 text-sm hover:bg-muted">
                               {item.name}
                             </Link>
                           </NavigationMenuLink>

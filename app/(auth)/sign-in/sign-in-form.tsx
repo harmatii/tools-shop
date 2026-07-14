@@ -39,14 +39,7 @@ const CredentialsSignInForm = () => {
       <div className="space-y-6">
         <div>
           <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            defaultValue={signInDefaultValues.email}
-          />
+          <Input id="email" name="email" type="email" required autoComplete="email" defaultValue={signInDefaultValues.email} />
         </div>
         <div>
           <Label htmlFor="password">Password</Label>

@@ -50,13 +50,7 @@ const SignUpForm = () => {
         </div>
         <div>
           <Label htmlFor="password">Password</Label>
-          <PasswordInput
-            id="password"
-            name="password"
-            required
-            autoComplete="new-password"
-            defaultValue={signUpDefaultValues.password}
-          />
+          <PasswordInput id="password" name="password" required autoComplete="new-password" defaultValue={signUpDefaultValues.password} />
         </div>
         <div>
           <Label htmlFor="confirmPassword">Confirm Password</Label>

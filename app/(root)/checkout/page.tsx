@@ -40,6 +40,8 @@ const CheckoutPage = async () => {
     deliveryType: savedAddress?.deliveryType ?? "branch",
     city: savedAddress?.city ?? "",
     branch: savedAddress?.branch ?? "",
+    cityRef: savedAddress?.cityRef ?? "",
+    branchRef: savedAddress?.branchRef ?? "",
     streetAddress: savedAddress?.streetAddress ?? "",
     postalCode: savedAddress?.postalCode ?? "",
     country: savedAddress?.country ?? "",

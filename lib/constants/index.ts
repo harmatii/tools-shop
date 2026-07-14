@@ -24,6 +24,8 @@ export const shippingAddressDefaultValues = {
   deliveryType: "branch",
   city: "",
   branch: "",
+  cityRef: "",
+  branchRef: "",
   streetAddress: "",
   postalCode: "",
   country: "",

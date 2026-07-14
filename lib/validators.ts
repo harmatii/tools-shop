@@ -79,6 +79,11 @@ export const shippingAddressSchema = z
     deliveryType: z.enum(["branch", "address"]),
     city: z.string().min(3, "City must be at least 3 characters"),
     branch: z.string(),
+    // Nova Poshta internal ids of the chosen city and branch. The user never
+    // types these — the comboboxes fill them in when an option is picked, and
+    // we keep them so we can create a waybill through the API later.
+    cityRef: z.string(),
+    branchRef: z.string(),
     streetAddress: z.string(),
     postalCode: z.string(),
     country: z.string(),

@@ -10,7 +10,7 @@ declare module "next-auth" {
 
   interface Session {
     user: {
-      id: string;   // copied from token.sub in session()
+      id: string; // copied from token.sub in session()
       role: string; // copied from token.role in session()
     } & DefaultSession["user"]; // keeps the default fields: name, email, image
   }

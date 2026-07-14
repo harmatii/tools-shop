@@ -5,20 +5,10 @@ type DiscountBadgeProps = {
   className?: string;
 };
 
-export const DiscountBadge = ({
-  discountPct,
-  className,
-}: DiscountBadgeProps) => {
+export const DiscountBadge = ({ discountPct, className }: DiscountBadgeProps) => {
   if (discountPct <= 0) return null;
 
   return (
-    <span
-      className={cn(
-        "rounded-full bg-red-600 px-2 py-1 text-xs font-semibold text-white shadow-md",
-        className,
-      )}
-    >
-      -{discountPct}%
-    </span>
+    <span className={cn("rounded-full bg-red-600 px-2 py-1 text-xs font-semibold text-white shadow-md", className)}>-{discountPct}%</span>
   );
 };

@@ -3,13 +3,7 @@ import { UserIcon } from "lucide-react";
 import Link from "next/link";
 import { auth } from "@/auth";
 import { signOutUser } from "@/lib/actions/user.actions";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 // Header user widget — server component that branches on session state.
 // Renders a "Sign In" link when logged out; a circle-avatar dropdown with name, email, and Sign Out when logged in.
@@ -33,10 +27,7 @@ const UserButton = async () => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className="flex items-center">
-            <Button
-              variant="ghost"
-              className="relative w-8 h-8 rounded-full ml-2 flex items-center justify-center bg-gray-200"
-            >
+            <Button variant="ghost" className="relative w-8 h-8 rounded-full ml-2 flex items-center justify-center bg-gray-200">
               {firstInitial}
             </Button>
           </div>

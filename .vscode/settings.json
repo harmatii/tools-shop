@@ -1,12 +1,14 @@
 {
-    "css.validate": false,
-    "editor.quickSuggestions": {
-      "strings": true
-    },
-    "files.exclude": {
-      "prisma/generated": true
-    },
-    "files.watcherExclude": {
-      "**/prisma/generated/**": true
-    }
-  }
+  "css.validate": false,
+  "editor.quickSuggestions": {
+    "strings": true
+  },
+  "files.exclude": {
+    "prisma/generated": true
+  },
+  "files.watcherExclude": {
+    "**/prisma/generated/**": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true
+}

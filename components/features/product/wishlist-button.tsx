@@ -6,21 +6,9 @@ type WishlistButtonProps = {
 
 export const WishlistButton = ({ className }: WishlistButtonProps) => {
   return (
-    <button
-      className={cn(
-        "rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75",
-        className,
-      )}
-    >
+    <button className={cn("rounded-full bg-white p-1.5 text-gray-900 transition hover:text-gray-900/75", className)}>
       <span className="sr-only">Wishlist</span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="size-4"
-      >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-4">
         <path
           strokeLinecap="round"
           strokeLinejoin="round"

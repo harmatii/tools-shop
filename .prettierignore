@@ -1,0 +1,4 @@
+# build output and generated code — not ours to format
+.next
+prisma/generated
+package-lock.json

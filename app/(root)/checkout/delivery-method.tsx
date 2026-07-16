@@ -10,11 +10,11 @@ import { z } from "zod";
 import { shippingAddressDefaultValues } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Loader, ArrowRight } from "lucide-react";
 import { updateUserShippingAddress } from "@/lib/actions/user.actions";
 import { searchCities, searchWarehouses } from "@/lib/actions/novaposhta.actions";
+import { searchCities as searchUkrposhtaCities, searchPostOffices } from "@/lib/actions/ukrposhta.actions";
 import AddressFields from "./address-fields";
 import AsyncCombobox from "@/components/features/async-combobox";
 
@@ -32,8 +32,8 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
   // show the branch picker or the full address fields as the user switches between them.
   const deliveryType = form.watch("deliveryType");
 
-  // The Nova Poshta comboboxes only make sense for Nova Poshta, so we watch the
-  // carrier to fall back to plain text inputs when УкрПошта is selected. We also
+  // Both carriers now have their own autocomplete API, so we watch the carrier
+  // to decide which one the comboboxes should call. We also
   // watch cityRef because the branch search needs to know which city to look in.
   const carrier = form.watch("carrier");
   const cityRef = form.watch("cityRef");
@@ -71,7 +71,22 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
               <FormItem>
                 <FormLabel>Перевізник</FormLabel>
                 <FormControl>
-                  <RadioGroup onValueChange={field.onChange} value={field.value} className="flex flex-col gap-2">
+                  <RadioGroup
+                    onValueChange={(newCarrier) => {
+                      field.onChange(newCarrier);
+
+                      // The carriers live in different id worlds — Nova Poshta
+                      // uses refs, Ukrposhta uses city ids and postcodes — so a
+                      // city or branch picked for one is meaningless for the
+                      // other and we clear the whole selection on switch.
+                      form.setValue("city", "");
+                      form.setValue("cityRef", "");
+                      form.setValue("branch", "");
+                      form.setValue("branchRef", "");
+                    }}
+                    value={field.value}
+                    className="flex flex-col gap-2"
+                  >
                     <FormItem className="flex items-center gap-3">
                       <FormControl>
                         <RadioGroupItem value="novaPoshta" />
@@ -118,10 +133,12 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
             )}
           />
 
-          {/* Both delivery types need the city, so we always show it. For Nova
-              Poshta the field is an autocomplete backed by their API; for other
-              carriers we keep the plain text input. Picking a different city
-              resets the chosen branch, because the old one belongs to the old city. */}
+          {/* Both delivery types need the city, so we always show it. The field
+              is the same autocomplete for both carriers — only the server action
+              behind it differs. The `key` remounts the combobox on a carrier
+              switch so results fetched from one API never linger in the dropdown
+              of the other. Picking a different city resets the chosen branch,
+              because the old one belongs to the old city. */}
           <div className="flex flex-col md:flex-row gap-5">
             <FormField
               control={form.control}
@@ -130,22 +147,19 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
                 <FormItem className="w-full">
                   <FormLabel>Місто</FormLabel>
                   <FormControl>
-                    {carrier === "novaPoshta" ? (
-                      <AsyncCombobox
-                        value={field.value}
-                        placeholder="Почніть вводити назву міста…"
-                        emptyText="Місто не знайдено"
-                        onSearch={searchCities}
-                        onSelect={(option) => {
-                          form.setValue("city", option.label, { shouldValidate: true });
-                          form.setValue("cityRef", option.value);
-                          form.setValue("branch", "");
-                          form.setValue("branchRef", "");
-                        }}
-                      />
-                    ) : (
-                      <Input placeholder="Місто" {...field} />
-                    )}
+                    <AsyncCombobox
+                      key={carrier}
+                      value={field.value}
+                      placeholder="Почніть вводити назву міста…"
+                      emptyText="Місто не знайдено"
+                      onSearch={carrier === "novaPoshta" ? searchCities : searchUkrposhtaCities}
+                      onSelect={(option) => {
+                        form.setValue("city", option.label, { shouldValidate: true });
+                        form.setValue("cityRef", option.value);
+                        form.setValue("branch", "");
+                        form.setValue("branchRef", "");
+                      }}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -164,25 +178,24 @@ const DeliveryMethod = ({ shippingAddress }: { shippingAddress: ShippingAddress 
                   <FormItem className="w-full">
                     <FormLabel>Відділення</FormLabel>
                     <FormControl>
-                      {carrier === "novaPoshta" ? (
-                        // The branch list opens with the city's first branches right
-                        // away (searchOnOpen) and stays disabled until a city is
-                        // picked, because the API can't search branches without one.
-                        <AsyncCombobox
-                          value={field.value}
-                          placeholder={cityRef ? "Номер або вулиця відділення…" : "Спочатку оберіть місто"}
-                          emptyText="Відділення не знайдено"
-                          onSelect={(option) => {
-                            form.setValue("branch", option.label, { shouldValidate: true });
-                            form.setValue("branchRef", option.value);
-                          }}
-                          onSearch={(query) => searchWarehouses(cityRef, query)}
-                          searchOnOpen
-                          disabled={!cityRef}
-                        />
-                      ) : (
-                        <Input placeholder="Номер або адреса відділення" {...field} />
-                      )}
+                      {/* The branch list opens with the city's first branches right
+                          away (searchOnOpen) and stays disabled until a city is
+                          picked, because neither API can search branches without one. */}
+                      <AsyncCombobox
+                        key={carrier}
+                        value={field.value}
+                        placeholder={cityRef ? "Номер або вулиця відділення…" : "Спочатку оберіть місто"}
+                        emptyText="Відділення не знайдено"
+                        onSelect={(option) => {
+                          form.setValue("branch", option.label, { shouldValidate: true });
+                          form.setValue("branchRef", option.value);
+                        }}
+                        onSearch={(query) =>
+                          carrier === "novaPoshta" ? searchWarehouses(cityRef, query) : searchPostOffices(cityRef, query)
+                        }
+                        searchOnOpen
+                        disabled={!cityRef}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

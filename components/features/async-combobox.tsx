@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { ComboboxOption } from "@/lib/actions/novaposhta.actions";
+import { ComboboxOption } from "@/types";
 
 // A combobox is an input with an autocomplete dropdown: the user types, we ask
 // the server for matching options and show them as a list to pick from. This

@@ -1,6 +1,7 @@
 "use server";
 
 import { unstable_cache } from "next/cache";
+import type { ComboboxOption } from "@/types";
 
 // Every Nova Poshta request goes to this single endpoint as a POST with a JSON
 // body that says which model and method we want. The api key lives only on the
@@ -10,14 +11,6 @@ const NOVAPOSHTA_API_URL = "https://api.novaposhta.ua/v2.0/json/";
 // We keep cached answers for a day because cities and branches change rarely,
 // and a stale branch list for a few hours is not a real problem for checkout.
 const CACHE_SECONDS = 60 * 60 * 24;
-
-// The shape our comboboxes work with: `label` is the text the user sees in the
-// dropdown and `value` is the Nova Poshta ref (their internal id) that we store
-// alongside the text so we can create a waybill through the API later.
-export type ComboboxOption = {
-  label: string;
-  value: string;
-};
 
 // A small helper that sends the request envelope Nova Poshta expects and
 // returns the `data` array, or an empty array when anything goes wrong —
